@@ -1316,6 +1316,17 @@ GenericEvent* View::getFocusLostEvent()
     return &this->focusLostEvent;
 }
 
+GenericEvent* View::getWillDisappearEvent()
+{
+    return &this->willDisappearEvent;
+}
+
+
+void View::willDisappear(bool resetState)
+{
+    this->willDisappearEvent.fire(this);
+}
+
 void View::onFocusLost()
 {
     this->focused = false;
@@ -2456,6 +2467,11 @@ void View::setId(std::string id)
         fatal("ID cannot be empty");
 
     this->id = id;
+}
+
+std::string View::getId()
+{
+    return this->id;
 }
 
 bool View::isFocusable()

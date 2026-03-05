@@ -342,6 +342,7 @@ class View
 
     GenericEvent focusEvent;
     GenericEvent focusLostEvent;
+    GenericEvent willDisappearEvent;
 
     YGNode* ygNode;
 
@@ -755,6 +756,11 @@ class View
      * Sets the id of the view.
      */
     void setId(std::string id);
+
+    /**
+     * Returns the id of the view.
+     */
+    std::string getId();
 
     /**
      * Overrides align items of the parent box.
@@ -1289,10 +1295,7 @@ class View
       * Can be called if the view has
       * already disappeared, so be careful.
       */
-    virtual void willDisappear(bool resetState = false)
-    {
-        // Nothing to do
-    }
+    virtual void willDisappear(bool resetState = false);
 
     /**
       * Called when the show() animation (fade in)
@@ -1442,6 +1445,7 @@ class View
 
     GenericEvent* getFocusEvent();
     GenericEvent* getFocusLostEvent();
+    GenericEvent* getWillDisappearEvent();
 
     Animatable alpha = 1.0f;
 

@@ -102,6 +102,17 @@ Box::Box(Axis axis)
 
     this->registerFloatXMLAttribute("padding", [this](float value)
         { this->setPadding(value); });
+
+    // Gap
+    this->registerFloatXMLAttribute("gap", [this](float value)
+        { this->setGap(value); });
+
+    this->registerFloatXMLAttribute("columnGap", [this](float value)
+        { this->setColumnGap(value); });
+
+    this->registerFloatXMLAttribute("rowGap", [this](float value)
+        { this->setRowGap(value); });
+
 }
 
 Box::Box()
@@ -348,6 +359,24 @@ float Box::getPaddingRight()
     return YGNodeStyleGetPadding(this->ygNode, YGEdgeRight).value;
 }
 
+void Box::setGap(float gap)
+{
+    YGNodeStyleSetGap(this->ygNode, YGGutterAll, gap);
+    this->invalidate();
+}
+
+void Box::setColumnGap(float gap)
+{
+    YGNodeStyleSetGap(this->ygNode, YGGutterColumn, gap);
+    this->invalidate();
+}
+
+void Box::setRowGap(float gap)
+{
+    YGNodeStyleSetGap(this->ygNode, YGGutterRow, gap);
+    this->invalidate();
+}
+
 View* Box::getDefaultFocus()
 {
     // Focus ourself first
@@ -458,6 +487,8 @@ void Box::willAppear(bool resetState)
 
 void Box::willDisappear(bool resetState)
 {
+    View::willDisappear(resetState);
+
     for (View* child : this->children)
         child->willDisappear(resetState);
 }

@@ -174,6 +174,21 @@ class Box : public View
      */
     void setDirection(Direction direction);
 
+    /**
+     * Sets the gap between children.
+     */
+    void setGap(float gap);
+
+    /**
+     * Sets the gap between columns.
+     */
+    void setColumnGap(float gap);
+
+    /**
+     * Sets the gap between rows.
+     */
+    void setRowGap(float gap);
+
     void setAxis(Axis axis);
     Axis getAxis() const;
 
