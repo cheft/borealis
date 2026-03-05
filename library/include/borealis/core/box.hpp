@@ -167,6 +167,11 @@ class Box : public View
     void setAlignItems(AlignItems alignment);
 
     /**
+     * Sets flex wrap for the Box.
+     */
+    void setFlexWrap(bool wrap);
+
+    /**
      * Sets the direction of the box, aka place the views
      * left to right or right to left (flips the children).
      *

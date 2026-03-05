@@ -1096,6 +1096,14 @@ bool Application::loadFontFromFile(std::string fontName, std::string filePath)
     return true;
 }
 
+void Application::addFontFallback(std::string fontName, std::string fallbackFontName)
+{
+    int font = Application::getFont(fontName);
+    int fallback = Application::getFont(fallbackFontName);
+    if (font != FONT_INVALID && fallback != FONT_INVALID)
+        nvgAddFallbackFontId(Application::getNVGContext(), font, fallback);
+}
+
 bool Application::loadFontFromMemory(std::string fontName, void* address, size_t size, bool freeData)
 {
     int handle = nvgCreateFontMem(Application::getNVGContext(), fontName.c_str(), (unsigned char*)address, size, freeData);

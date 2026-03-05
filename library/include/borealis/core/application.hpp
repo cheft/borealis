@@ -170,6 +170,7 @@ class Application
     static int getFont(std::string fontName);
 
     static int getDefaultFont();
+    static void addFontFallback(std::string fontName, std::string fallbackFontName);
 
     static void notify(const std::string& text);
 

@@ -1916,14 +1916,14 @@ View* View::createFromXMLElement(tinyxml2::XMLElement* element)
     // make a class inheriting brls::Box and use the inflateFromXML* methods.
     if (viewName == "brls:View")
     {
-        const tinyxml2::XMLAttribute* xmlAttribute = element->FindAttribute("xml");
+        const char* xmlValue = element->Attribute("xml");
 
-        if (xmlAttribute)
+        if (xmlValue)
         {
 #ifdef USE_LIBROMFS
-            view = View::createFromXMLString(romfs::get(View::getFilePathXMLAttributeValue(xmlAttribute->Value())).string());
+            view = View::createFromXMLString(romfs::get(View::getFilePathXMLAttributeValue(xmlValue)).string());
 #else
-            view = View::createFromXMLFile(View::getFilePathXMLAttributeValue(xmlAttribute->Value()));
+            view = View::createFromXMLFile(View::getFilePathXMLAttributeValue(xmlValue));
 #endif
         }
         else

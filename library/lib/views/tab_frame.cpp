@@ -107,12 +107,12 @@ void TabFrame::handleXMLElement(tinyxml2::XMLElement* element)
 
     if (name == "brls:Tab")
     {
-        const tinyxml2::XMLAttribute* labelAttribute = element->FindAttribute("label");
+        const char* labelValue = element->Attribute("label");
 
-        if (!labelAttribute)
+        if (!labelValue)
             fatal("\"label\" attribute missing from \"" + name + "\" tab");
 
-        std::string label = View::getStringXMLAttributeValue(labelAttribute->Value());
+        std::string label = View::getStringXMLAttributeValue(labelValue);
 
         tinyxml2::XMLElement* viewElement = element->FirstChildElement();
 

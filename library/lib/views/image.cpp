@@ -21,9 +21,12 @@
 #include <borealis/core/application.hpp>
 #include <borealis/core/util.hpp>
 #include <borealis/views/image.hpp>
+#include <webp/decode.h>
 
 #include "borealis/core/cache_helper.hpp"
 #include "borealis/core/thread.hpp"
+#include <fstream>
+#include <vector>
 
 namespace brls
 {
@@ -177,8 +180,11 @@ void Image::draw(NVGcontext* vg, float x, float y, float width, float height, St
     if (this->texture == 0)
         return;
 
-    float coordX = x + this->imageX;
-    float coordY = y + this->imageY;
+    // Rounding coordinates to prevent border bleeding/stretching artifacts
+    float coordX = floorf(x + this->imageX + 0.5f);
+    float coordY = floorf(y + this->imageY + 0.5f);
+    float drawW  = floorf(this->imageWidth + 0.5f);
+    float drawH  = floorf(this->imageHeight + 0.5f);
 
     this->paint.xform[4] = coordX;
     this->paint.xform[5] = coordY;
@@ -190,7 +196,7 @@ void Image::draw(NVGcontext* vg, float x, float y, float width, float height, St
     }
     else
     {
-        nvgRoundedRect(vg, coordX, coordY, this->imageWidth, this->imageHeight, getCornerRadius());
+        nvgRoundedRect(vg, coordX, coordY, drawW, drawH, getCornerRadius());
     }
     nvgFillPaint(vg, a(this->paint));
     nvgFill(vg);
@@ -337,7 +343,22 @@ void Image::setImageFromFile(const std::string& path)
     if (checkCache(path) > 0)
         return;
 
-    // Load texture
+    // Load file into memory to check if it's WebP
+    std::ifstream file(path, std::ios::binary | std::ios::ate);
+    if (file.is_open()) {
+        std::streamsize size = file.tellg();
+        file.seekg(0, std::ios::beg);
+        std::vector<char> buffer(size);
+        if (file.read(buffer.data(), size)) {
+            this->setImageFromMem((unsigned char*)buffer.data(), size);
+            // Save cache (setImageFromMem might have already set the texture)
+            if (this->texture > 0)
+                TextureCache::instance().addCache(path, this->texture);
+            return;
+        }
+    }
+
+    // Fallback to nvgCreateImage if file reading fails
     int tex = nvgCreateImage(Application::getNVGContext(), path.c_str(), this->getImageFlags());
     innerSetImage(tex);
 
@@ -349,8 +370,23 @@ void Image::setImageFromMem(const unsigned char* data, int size)
 {
     NVGcontext* vg = Application::getNVGContext();
 
-    // Load texture
-    innerSetImage(nvgCreateImageMem(vg, 0, const_cast<unsigned char*>(data), size));
+    // Check if it's WebP
+    if (size >= 12 &&
+        data[0] == 'R' && data[1] == 'I' && data[2] == 'F' && data[3] == 'F' &&
+        data[8] == 'W' && data[9] == 'E' && data[10] == 'B' && data[11] == 'P')
+    {
+        int w, h;
+        uint8_t* rgba = WebPDecodeRGBA(data, size, &w, &h);
+        if (rgba) {
+            int tex = nvgCreateImageRGBA(vg, w, h, this->getImageFlags(), rgba);
+            WebPFree(rgba);
+            innerSetImage(tex);
+            return;
+        }
+    }
+
+    // Load texture via NanoVG (stb_image)
+    innerSetImage(nvgCreateImageMem(vg, this->getImageFlags(), const_cast<unsigned char*>(data), size));
 }
 
 void Image::setImageAsync(std::function<void(std::function<void(const std::string&, size_t length)>)> cb)

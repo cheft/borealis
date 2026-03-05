@@ -670,6 +670,12 @@ void Box::setAlignItems(AlignItems alignment)
     this->invalidate();
 }
 
+void Box::setFlexWrap(bool wrap)
+{
+    YGNodeStyleSetFlexWrap(this->ygNode, wrap ? YGWrapWrap : YGWrapNoWrap);
+    this->invalidate();
+}
+
 View* Box::getView(std::string id)
 {
     if (id == this->id)
