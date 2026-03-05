@@ -122,7 +122,7 @@ if (PLATFORM_DESKTOP)
         list(APPEND BOREALIS_SRC ${BOREALIS_PATH}/lib/platforms/desktop/desktop_darwin.mm)
     endif ()
     list(APPEND BOREALIS_SOURCE ${BOREALIS_PATH}/lib/platforms/desktop)
-    set(BRLS_PLATFORM_RESOURCES_PATH "\"${BRLS_RESOURCES_DIR}/resources/\"")
+    set(BRLS_PLATFORM_RESOURCES_PATH "\"${BRLS_RESOURCES_DIR}/\"")
 elseif (PLATFORM_PSV)
     list(APPEND BOREALIS_SOURCE ${BOREALIS_PATH}/lib/platforms/desktop)
     list(APPEND BRLS_PLATFORM_LIBS
