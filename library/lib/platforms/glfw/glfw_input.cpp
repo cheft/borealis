@@ -128,12 +128,14 @@ void GLFWInputManager::keyboardCallback(GLFWwindow* window, int key, int scancod
     state.key            = (BrlsKeyboardScancode)key;
     state.mods           = mods;
     state.pressed        = action != GLFW_RELEASE;
-    const char* key_name = glfwGetKeyName(key, scancode);
-    if (key_name != NULL)
-        Logger::debug("Key: {} / Code: {} / Action: {}", key_name, key, action);
-    else
-        Logger::debug("Key: NULL / Code: {} / Action: {}", key, action);
     self->getKeyboardKeyStateChanged()->fire(state);
+    Application::setActiveEvent(true);
+}
+
+void GLFWInputManager::charCallback(GLFWwindow* window, unsigned int codepoint)
+{
+    auto* self = (GLFWInputManager*)Application::getPlatform()->getInputManager();
+    self->getCharInputEvent()->fire(codepoint);
     Application::setActiveEvent(true);
 }
 
@@ -194,6 +196,7 @@ GLFWInputManager::GLFWInputManager(GLFWwindow* window)
     glfwSetScrollCallback(window, scrollCallback);
     glfwSetCursorPosCallback(window, cursorCallback);
     glfwSetKeyCallback(window, keyboardCallback);
+    glfwSetCharCallback(window, charCallback);
     if (glfwTouchInputSupported())
     {
         glfwSetInputMode(window, GLFW_TOUCH, GLFW_TRUE);

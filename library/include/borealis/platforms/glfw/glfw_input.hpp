@@ -55,6 +55,7 @@ class GLFWInputManager : public InputManager
     static void scrollCallback(GLFWwindow* window, double xoffset, double yoffset);
     static void cursorCallback(GLFWwindow* window, double xoffset, double yoffset);
     static void keyboardCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
+    static void charCallback(GLFWwindow* window, unsigned int codepoint);
     GLFWwindow* window;
     bool pointerLocked = false;
 };

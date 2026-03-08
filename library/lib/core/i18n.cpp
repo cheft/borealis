@@ -33,6 +33,10 @@ namespace fs = std::experimental::filesystem;
 #include <nlohmann/json.hpp>
 #include <string>
 
+#ifdef __SWITCH__
+#include <dirent.h>
+#endif
+
 #ifndef BRLS_I18N_PREFIX
 #define BRLS_I18N_PREFIX ""
 #endif
@@ -66,6 +70,45 @@ static void loadLocale(std::string locale, nlohmann::json* target)
 #else
     std::string localePath = BRLS_ASSET("i18n/" + locale);
 
+#ifdef __SWITCH__
+    // On Switch, std::filesystem doesn't understand romfs:/ virtual paths.
+    // Use POSIX opendir/readdir instead.
+    DIR* dirp = opendir(localePath.c_str());
+    if (!dirp)
+    {
+        Logger::error("Cannot load locale {}: directory {} doesn't exist", locale, localePath);
+        return;
+    }
+
+    struct dirent* ent;
+    while ((ent = readdir(dirp)) != nullptr)
+    {
+        std::string name = ent->d_name;
+        if (name == "." || name == "..")
+            continue;
+        if (!endsWith(name, ".json"))
+            continue;
+
+        std::string path = localePath + "/" + name;
+
+        nlohmann::json strings;
+        std::ifstream jsonStream;
+        jsonStream.open(path);
+
+        try
+        {
+            jsonStream >> strings;
+        }
+        catch (const std::exception& e)
+        {
+            Logger::error("Error while loading \"{}\": {}", path, e.what());
+        }
+
+        jsonStream.close();
+        (*target)[name.substr(0, name.length() - 5)] = strings;
+    }
+    closedir(dirp);
+#else
     if (!fs::exists(localePath))
     {
         Logger::error("Cannot load locale {}: directory {} doesn't exist", locale, localePath);
@@ -108,6 +151,7 @@ static void loadLocale(std::string locale, nlohmann::json* target)
 
         (*target)[name.substr(0, name.length() - 5)] = strings;
     }
+#endif /* __SWITCH__ */
 #endif /* USE_LIBROMFS */
 }
 

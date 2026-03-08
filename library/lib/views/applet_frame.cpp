@@ -189,7 +189,8 @@ void AppletFrame::popContentView(std::function<void(void)> cb)
     View* newView = contentViewStack.back();
     setContentView(newView);
     Application::giveFocus(newView);
-    cb();
+    if (cb)
+        cb();
 
     lastView->freeView();
 }

@@ -950,7 +950,8 @@ bool Application::popActivity(TransitionAnimation animation, std::function<void(
                 break;
             }
         }
-        cb();
+        if (cb)
+            cb();
         brls::Logger::debug("Start delete top activity");
         if(free) delete last;
         brls::Logger::debug("Top activity deleted");

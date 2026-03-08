@@ -364,6 +364,11 @@ class InputManager
         return &keyboardKeyStateChanged;
     }
 
+    inline Event<unsigned int>* getCharInputEvent()
+    {
+        return &charInputEvent;
+    }
+
     /**
      * Calculate current touch phase based on it's previous state
      */
@@ -380,6 +385,7 @@ class InputManager
     Event<Point> mouseCusorOffsetChanged;
     Event<Point> mouseScrollOffsetChanged;
     Event<KeyState> keyboardKeyStateChanged;
+    Event<unsigned int> charInputEvent;
     Event<SensorEvent> controllerSensorStateChanged;
 };
 
