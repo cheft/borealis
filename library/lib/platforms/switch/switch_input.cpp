@@ -235,7 +235,10 @@ void SwitchInputManager::updateControllerStateInner(ControllerState* state, PadS
     padUpdate(pad);
     uint64_t keysDown = padGetButtons(pad);
 
-    bool full = pad->style_set & HidNpadStyleSet_NpadFullCtrl;
+    // Handheld and JoyDual both have complete button sets and must use full mapping.
+    bool full = (pad->style_set & (HidNpadStyleTag_NpadFullKey
+        | HidNpadStyleTag_NpadJoyDual
+        | HidNpadStyleTag_NpadHandheld)) != 0;
 
     for (size_t i = 0; i < _BUTTON_MAX; i++)
     {
