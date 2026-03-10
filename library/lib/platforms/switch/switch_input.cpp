@@ -147,7 +147,14 @@ SwitchInputManager::~SwitchInputManager()
 void SwitchInputManager::clearVibration(int controller)
 {
     Logger::debug("Vibration clear #{}", controller);
-    hidInitializeVibrationDevices(m_vibration_device_handles[controller], 2, (HidNpadIdType)controller, HidNpadStyleTag_NpadJoyDual);
+    HidNpadStyleTag style = HidNpadStyleTag_NpadJoyDual;
+
+    if (padsStyleSet[controller] & HidNpadStyleTag_NpadFullKey)
+        style = HidNpadStyleTag_NpadFullKey;
+    else if (padsStyleSet[controller] & HidNpadStyleTag_NpadJoyDual)
+        style = HidNpadStyleTag_NpadJoyDual;
+
+    hidInitializeVibrationDevices(m_vibration_device_handles[controller], 2, (HidNpadIdType)controller, style);
     sendRumbleInternal(m_vibration_device_handles[controller], m_vibration_values[controller], 160.0f, 320.0f, 0.0f, 0.0f);
 }
 
