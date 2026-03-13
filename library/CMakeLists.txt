@@ -110,7 +110,7 @@ if (PLATFORM_DESKTOP)
         endif ()
         list(APPEND BRLS_PLATFORM_LIBS wlanapi iphlpapi ws2_32)
     elseif (APPLE)
-        if (CMAKE_OSX_DEPLOYMENT_TARGET VERSION_GREATER_EQUAL "10.6")
+        if (NOT CMAKE_OSX_DEPLOYMENT_TARGET OR CMAKE_OSX_DEPLOYMENT_TARGET VERSION_GREATER_EQUAL "10.6")
             list(APPEND BRLS_PLATFORM_LIBS "-framework CoreWLAN")
         endif ()
         if (CMAKE_OSX_DEPLOYMENT_TARGET VERSION_GREATER_EQUAL "10.7")
@@ -322,7 +322,7 @@ set_target_properties(borealis PROPERTIES
 set_source_files_properties(${BOREALIS_PATH}/lib/platforms/desktop/desktop_darwin.mm PROPERTIES
         SKIP_UNITY_BUILD_INCLUSION ON)
 target_include_directories(borealis PUBLIC ${BOREALIS_INCLUDE})
-target_link_libraries(borealis fmt tweeny yogacore ${BRLS_PLATFORM_LIBS})
+target_link_libraries(borealis PUBLIC fmt tweeny yogacore ${BRLS_PLATFORM_LIBS})
 target_compile_options(borealis PUBLIC
         -DBRLS_RESOURCES=${BRLS_PLATFORM_RESOURCES_PATH}
         -DYG_ENABLE_EVENTS
